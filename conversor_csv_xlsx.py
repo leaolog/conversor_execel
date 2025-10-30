@@ -215,6 +215,7 @@ st.markdown(
 
 >>>>>>> a830919 (ajuste_markdow)
 
+
 # --------------------------
 # Caminhos das imagens
 # --------------------------
