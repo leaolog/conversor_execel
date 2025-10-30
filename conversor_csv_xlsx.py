@@ -26,8 +26,8 @@ h1 { font-family: "Source Sans", sans-serif; font-size: 2.5rem; margin-bottom: 1
 # --------------------------
 # Caminhos das imagens
 # --------------------------
-logo_path = os.path.join("Assets", "logo_excel.png")
-leao_logo_path = os.path.join("Assets", "logo_leao.png")
+logo_path = "Assets/logo_excel.png"   # Logo do Excel
+leao_logo_path = "Assets/logo_leao.png"  # Logo do Leão
 
 # --------------------------
 # Cabeçalho com logos (Base64)
@@ -49,7 +49,7 @@ with col2:
         st.warning("⚠️ Logo do Leão não encontrado!")
 
 # --------------------------
-# Título e instruções
+# Título da página
 # --------------------------
 st.title("Conversor de Arquivos CSV → Excel")
 st.markdown("Arraste ou selecione um arquivo CSV para convertê-lo em Excel.")
@@ -73,14 +73,20 @@ if uploaded_file:
     if not st.session_state.excel_gerado:
         with st.spinner("🔄 Processando arquivo..."):
             texto = uploaded_file.getvalue().decode('utf-8', errors='ignore')
+
+            # Corrige quebras de linha dentro de aspas
             texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
 
-            # Detecta separador
+            # Detectar separador
             sample = texto_corrigido[:4096]
-            st.session_state.sep = ',' if ',' in sample and ';' not in sample else ';'
+            if ',' in sample and ';' not in sample:
+                st.session_state.sep = ','
+            else:
+                st.session_state.sep = ';'
 
-            time.sleep(1)  # simula processamento
+            time.sleep(1)
 
+            # Lê CSV com pandas
             df = pd.read_csv(
                 StringIO(texto_corrigido),
                 sep=st.session_state.sep,
@@ -90,19 +96,24 @@ if uploaded_file:
                 on_bad_lines='skip'
             )
 
+            # Limpeza
             df = df.dropna(how='all', axis=1)
             df.columns = df.columns.str.strip()
             df = df.dropna(how='all')
             df = df[df.count(axis=1) > 2]
 
+            # Salva no session_state
             st.session_state.df_excel = df
             st.session_state.excel_gerado = True
 
     if st.session_state.excel_gerado:
         st.success("✅ Arquivo processado com sucesso!")
+
+        # Preparar para download
         output = BytesIO()
         st.session_state.df_excel.to_excel(output, index=False)
         output.seek(0)
+
         st.download_button(
             label="Baixar Excel",
             data=output,
