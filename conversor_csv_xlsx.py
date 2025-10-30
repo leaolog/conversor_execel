@@ -4,6 +4,7 @@ import re
 from io import StringIO, BytesIO
 import time
 <<<<<<< HEAD
+<<<<<<< HEAD
 from PIL import Image
 import os
 import base64
@@ -37,6 +38,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 =======
+=======
+>>>>>>> 5b5433e (ajuste_logos)
 import os
 import base64
 
@@ -56,6 +59,7 @@ st.markdown("""
 h1 { font-family: "Source Sans", sans-serif; font-size: 2.5rem; margin-bottom: 1rem; color: #422900; }
 </style>
 """, unsafe_allow_html=True)
+<<<<<<< HEAD
 >>>>>>> 18800bd (ajustes_pastas)
 st.markdown("""
 <style>
@@ -63,10 +67,13 @@ st.markdown("""
 h1 { font-family: "Source Sans", sans-serif; font-size: 2.5rem; margin-bottom: 1rem; color: #422900; }
 </style>
 """, unsafe_allow_html=True)
+=======
+>>>>>>> 5b5433e (ajuste_logos)
 
 # --------------------------
 # Caminhos das imagens
 # --------------------------
+<<<<<<< HEAD
 <<<<<<< HEAD
 base_path = os.path.dirname(__file__)  # pasta do script
 logo_excel_path = os.path.join(base_path, "..", "Assets", "logo_excel.png")
@@ -84,38 +91,42 @@ leao_logo_path = os.path.join("Assets", "logo_leao.png")
 # Cabeçalho com logos (Base64)
 >>>>>>> 18800bd (ajustes_pastas)
 # Cabeçalho com logos (Base64)
+=======
+logo_path = "Assets/logo_excel.png"   # Logo do Excel
+leao_logo_path = "Assets/logo_leao.png"  # Logo do Leão
+
+# --------------------------
+# Cabeçalho com logos (Base64)
+>>>>>>> 5b5433e (ajuste_logos)
 # --------------------------
 col1, col2 = st.columns([4,1])
 
+
 with col1:
-<<<<<<< HEAD
-    if os.path.exists(logo_excel_path):
-        logo_excel = Image.open(logo_excel_path)
-        st.image(logo_excel, width=108)
-=======
     if os.path.exists(logo_path):
         logo_base64 = get_base64_image(logo_path)
         st.markdown(f'<img src="data:image/png;base64,{logo_base64}" width="108">', unsafe_allow_html=True)
+<<<<<<< HEAD
 >>>>>>> 18800bd (ajustes_pastas)
     if os.path.exists(logo_path):
         logo_base64 = get_base64_image(logo_path)
         st.markdown(f'<img src="data:image/png;base64,{logo_base64}" width="108">', unsafe_allow_html=True)
+=======
+>>>>>>> 5b5433e (ajuste_logos)
     else:
         st.warning("⚠️ Logo do Excel não encontrado!")
 
 with col2:
-<<<<<<< HEAD
-    if os.path.exists(logo_leao_path):
-        logo_leao = Image.open(logo_leao_path)
-        st.image(logo_leao, width=125)
-=======
     if os.path.exists(leao_logo_path):
         leao_logo_base64 = get_base64_image(leao_logo_path)
         st.markdown(f'<img src="data:image/png;base64,{leao_logo_base64}" width="125">', unsafe_allow_html=True)
+<<<<<<< HEAD
 >>>>>>> 18800bd (ajustes_pastas)
     if os.path.exists(leao_logo_path):
         leao_logo_base64 = get_base64_image(leao_logo_path)
         st.markdown(f'<img src="data:image/png;base64,{leao_logo_base64}" width="125">', unsafe_allow_html=True)
+=======
+>>>>>>> 5b5433e (ajuste_logos)
     else:
         st.warning("⚠️ Logo do Leão não encontrado!")
 
@@ -144,17 +155,19 @@ if uploaded_file:
     if not st.session_state.excel_gerado:
         with st.spinner("🔄 Processando arquivo..."):
             texto = uploaded_file.getvalue().decode('utf-8', errors='ignore')
-<<<<<<< HEAD
 
             # Corrige quebras de linha dentro de aspas
             texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
 
+<<<<<<< HEAD
             # Detectar separador de forma simples
 =======
             texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
 
             # Detecta separador
 >>>>>>> 18800bd (ajustes_pastas)
+=======
+>>>>>>> 5b5433e (ajuste_logos)
             # Detectar separador
             sample = texto_corrigido[:4096]
             if ',' in sample and ';' not in sample:
@@ -165,9 +178,12 @@ if uploaded_file:
             time.sleep(1)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             # Lê CSV
 =======
 >>>>>>> 18800bd (ajustes_pastas)
+=======
+>>>>>>> 5b5433e (ajuste_logos)
             # Lê CSV com pandas
             df = pd.read_csv(
                 StringIO(texto_corrigido),
@@ -178,16 +194,12 @@ if uploaded_file:
                 on_bad_lines='skip'
             )
 
-<<<<<<< HEAD
             # Limpeza
-=======
->>>>>>> 18800bd (ajustes_pastas)
             df = df.dropna(how='all', axis=1)
             df.columns = df.columns.str.strip()
             df = df.dropna(how='all')
             df = df[df.count(axis=1) > 2]
 
-<<<<<<< HEAD
             # Salva no session_state
             st.session_state.df_excel = df
             st.session_state.excel_gerado = True
@@ -200,16 +212,6 @@ if uploaded_file:
         st.session_state.df_excel.to_excel(output, index=False)
         output.seek(0)
 
-=======
-            st.session_state.df_excel = df
-            st.session_state.excel_gerado = True
-
-    if st.session_state.excel_gerado:
-        st.success("✅ Arquivo processado com sucesso!")
-        output = BytesIO()
-        st.session_state.df_excel.to_excel(output, index=False)
-        output.seek(0)
->>>>>>> 18800bd (ajustes_pastas)
         st.download_button(
             label="Baixar Excel",
             data=output,
