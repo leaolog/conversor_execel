@@ -108,83 +108,102 @@ if st.session_state.uploaded_files:
     with st.spinner("🔄 Processando arquivos..."):
         time.sleep(0.5)
 
-        # Caso único
-        if len(uploaded_files) == 1:
-            uploaded_file = uploaded_files[0]
+# --- Caso 1: Apenas um arquivo ---
+if len(uploaded_files) == 1:
+    uploaded_file = uploaded_files[0]
 
-            texto = uploaded_file.getvalue().decode('utf-8', errors='ignore')
-            texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
-            sample = texto_corrigido[:4096]
-            sep = ',' if ',' in sample and ';' not in sample else ';'
+    texto = uploaded_file.getvalue().decode('utf-8', errors='ignore')
+    texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
+    sample = texto_corrigido[:4096]
+    sep = ',' if ',' in sample and ';' not in sample else ';'
 
-            df = pd.read_csv(
-                StringIO(texto_corrigido),
-                sep=sep,
-                dtype=str,
-                engine='python',
-                quoting=3,
-                on_bad_lines='skip'
-            )
+    df = pd.read_csv(
+        StringIO(texto_corrigido),
+        sep=sep,
+        dtype=str,
+        engine='python',
+        quoting=3,
+        on_bad_lines='skip'
+    )
 
-            df = df.dropna(how='all', axis=1)
-            df.columns = df.columns.str.strip()
-            df = df.dropna(how='all')
-            df = df[df.count(axis=1) > 2]
+    df = df.dropna(how='all', axis=1)
+    df.columns = df.columns.str.strip()
+    df = df.dropna(how='all')
+    df = df[df.count(axis=1) > 2]
 
-            output = BytesIO()
-            df.to_excel(output, index=False)
-            output.seek(0)
+    output = BytesIO()
+    df.to_excel(output, index=False)
+    output.seek(0)
 
-            st.success("✅ Arquivo convertido com sucesso!")
-            st.download_button(
-                label="📥 Baixar Excel",
-                data=output,
-                file_name=f"{os.path.splitext(uploaded_file.name)[0]}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+    st.success("✅ Arquivo convertido com sucesso!")
 
-        # Caso múltiplo
-        else:
-            zip_buffer = BytesIO()
+    # Linha com os dois botões lado a lado (Baixar e Limpar)
+    col_download, col_clear = st.columns([4, 1])
+    with col_download:
+        st.download_button(
+            label="📥 Baixar Excel",
+            data=output,
+            file_name=f"{os.path.splitext(uploaded_file.name)[0]}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
 
-            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-                for uploaded_file in uploaded_files:
-                    try:
-                        texto = uploaded_file.getvalue().decode('utf-8', errors='ignore')
-                        texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
-                        sample = texto_corrigido[:4096]
-                        sep = ',' if ',' in sample and ';' not in sample else ';'
+    with col_clear:
+        if st.button("🧹 Limpar", use_container_width=True):
+            st.session_state.uploaded_files = None
+            st.experimental_rerun()
 
-                        df = pd.read_csv(
-                            StringIO(texto_corrigido),
-                            sep=sep,
-                            dtype=str,
-                            engine='python',
-                            quoting=3,
-                            on_bad_lines='skip'
-                        )
+# --- Caso 2: Múltiplos arquivos ---
+else:
+    zip_buffer = BytesIO()
 
-                        df = df.dropna(how='all', axis=1)
-                        df.columns = df.columns.str.strip()
-                        df = df.dropna(how='all')
-                        df = df[df.count(axis=1) > 2]
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for uploaded_file in uploaded_files:
+            try:
+                texto = uploaded_file.getvalue().decode('utf-8', errors='ignore')
+                texto_corrigido = re.sub(r'"\s*\n\s*"', ' ', texto)
+                sample = texto_corrigido[:4096]
+                sep = ',' if ',' in sample and ';' not in sample else ';'
 
-                        excel_buffer = BytesIO()
-                        df.to_excel(excel_buffer, index=False)
-                        excel_buffer.seek(0)
+                df = pd.read_csv(
+                    StringIO(texto_corrigido),
+                    sep=sep,
+                    dtype=str,
+                    engine='python',
+                    quoting=3,
+                    on_bad_lines='skip'
+                )
 
-                        file_name = os.path.splitext(uploaded_file.name)[0] + ".xlsx"
-                        zipf.writestr(file_name, excel_buffer.read())
+                df = df.dropna(how='all', axis=1)
+                df.columns = df.columns.str.strip()
+                df = df.dropna(how='all')
+                df = df[df.count(axis=1) > 2]
 
-                    except Exception as e:
-                        st.error(f"⚠️ Erro ao processar {uploaded_file.name}: {e}")
+                excel_buffer = BytesIO()
+                df.to_excel(excel_buffer, index=False)
+                excel_buffer.seek(0)
 
-            zip_buffer.seek(0)
-            st.success("✅ Todos os arquivos foram convertidos e compactados com sucesso!")
+                file_name = os.path.splitext(uploaded_file.name)[0] + ".xlsx"
+                zipf.writestr(file_name, excel_buffer.read())
 
-            st.download_button(
-                label="📦 Baixar ZIP com arquivos Excel",
-                data=zip_buffer,
-                file_name="Arquivos_Convertidos.zip",
-                mime="application/zip"
-            )
+            except Exception as e:
+                st.error(f"⚠️ Erro ao processar {uploaded_file.name}: {e}")
+
+    zip_buffer.seek(0)
+    st.success("✅ Todos os arquivos foram convertidos e compactados com sucesso!")
+
+    # Linha com botões lado a lado
+    col_download, col_clear = st.columns([4, 1])
+    with col_download:
+        st.download_button(
+            label="📦 Baixar ZIP com arquivos Excel",
+            data=zip_buffer,
+            file_name="Arquivos_Convertidos.zip",
+            mime="application/zip",
+            use_container_width=True
+        )
+
+    with col_clear:
+        if st.button("🧹 Limpar", use_container_width=True):
+            st.session_state.uploaded_files = None
+            st.experimental_rerun()
