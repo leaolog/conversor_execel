@@ -95,7 +95,6 @@ if st.session_state.uploaded_files:
     if st.button("🧹 Limpar", key="limpar"):
         st.session_state.uploaded_files = None
         st.session_state.uploader = None  # Limpa o uploader
-        st.rerun()
 
 # --------------------------
 # Processamento dos arquivos
@@ -103,7 +102,6 @@ if st.session_state.uploaded_files:
 if st.session_state.uploaded_files:
     uploaded_files = st.session_state.uploaded_files
 
-    # --- Processamento ---
     with st.spinner("🔄 Processando arquivos..."):
         time.sleep(0.5)
 
