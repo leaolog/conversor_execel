@@ -59,7 +59,7 @@ with col2:
 # --------------------------
 # Título da página
 # --------------------------
-st.title("Conversor de Arquivos CSV → Excel (ZIP ou Individual)")
+st.title("Conversor de Arquivos CSV → Excel")
 st.markdown("Arraste ou selecione **um ou mais arquivos CSV** para convertê-los em **arquivos Excel (.xlsx)**.")
 
 # --------------------------
@@ -104,7 +104,7 @@ if uploaded_files:
 
             st.success("✅ Arquivo convertido com sucesso!")
             st.download_button(
-                label="📥 Baixar Excel",
+                label="Baixar Excel",
                 data=output,
                 file_name=f"{os.path.splitext(uploaded_file.name)[0]}.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -150,7 +150,7 @@ if uploaded_files:
             st.success("✅ Todos os arquivos foram convertidos e compactados com sucesso!")
 
             st.download_button(
-                label="📦 Baixar ZIP com arquivos Excel",
+                label="Baixar ZIP com arquivos Excel",
                 data=zip_buffer,
                 file_name="Arquivos_Convertidos.zip",
                 mime="application/zip"
