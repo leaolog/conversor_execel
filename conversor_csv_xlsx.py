@@ -148,10 +148,6 @@ if len(uploaded_files) == 1:
             use_container_width=True
         )
 
-    with col_clear:
-        if st.button("🧹 Limpar", use_container_width=True):
-            st.session_state.uploaded_files = None
-            st.experimental_rerun()
 
 # --- Caso 2: Múltiplos arquivos ---
 else:
