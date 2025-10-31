@@ -84,9 +84,18 @@ uploaded_files = st.file_uploader(
     key="uploader"
 )
 
-# Atualiza o estado
+# Atualiza o estado se houver novos uploads
 if uploaded_files:
     st.session_state.uploaded_files = uploaded_files
+
+# --------------------------
+# Botão de Limpar
+# --------------------------
+if st.session_state.uploaded_files:
+    if st.button("🧹 Limpar", key="limpar"):
+        st.session_state.uploaded_files = None
+        st.session_state.uploader = None  # Limpa o uploader
+        st.rerun()
 
 # --------------------------
 # Processamento dos arquivos
@@ -126,20 +135,13 @@ if st.session_state.uploaded_files:
 
         st.success("✅ Arquivo convertido com sucesso!")
 
-        col_download, col_clear = st.columns([4, 1])
-        with col_download:
-            st.download_button(
-                label="📥 Baixar Excel",
-                data=output,
-                file_name=f"{os.path.splitext(uploaded_file.name)[0]}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
-
-        with col_clear:
-            if st.button("🧹 Limpar", use_container_width=True):
-                st.session_state.uploaded_files = None
-                st.rerun()
+        st.download_button(
+            label="📥 Baixar Excel",
+            data=output,
+            file_name=f"{os.path.splitext(uploaded_file.name)[0]}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
 
     else:
         zip_buffer = BytesIO()
@@ -179,17 +181,10 @@ if st.session_state.uploaded_files:
         zip_buffer.seek(0)
         st.success("✅ Todos os arquivos foram convertidos e compactados com sucesso!")
 
-        col_download, col_clear = st.columns([4, 1])
-        with col_download:
-            st.download_button(
-                label="📦 Baixar ZIP com arquivos Excel",
-                data=zip_buffer,
-                file_name="Arquivos_Convertidos.zip",
-                mime="application/zip",
-                use_container_width=True
-            )
-
-        with col_clear:
-            if st.button("🧹 Limpar", use_container_width=True):
-                st.session_state.uploaded_files = None
-                st.rerun()
+        st.download_button(
+            label="📦 Baixar ZIP com arquivos Excel",
+            data=zip_buffer,
+            file_name="Arquivos_Convertidos.zip",
+            mime="application/zip",
+            use_container_width=True
+        )
