@@ -139,7 +139,7 @@ if st.session_state.uploaded_files:
         with col_clear:
             if st.button("🧹 Limpar", use_container_width=True):
                 st.session_state.uploaded_files = None
-                st.experimental_rerun()
+                st.rerun()
 
     else:
         zip_buffer = BytesIO()
@@ -192,4 +192,4 @@ if st.session_state.uploaded_files:
         with col_clear:
             if st.button("🧹 Limpar", use_container_width=True):
                 st.session_state.uploaded_files = None
-                st.experimental_rerun()
+                st.rerun()
