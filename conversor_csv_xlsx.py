@@ -63,15 +63,36 @@ st.title("Conversor de Arquivos CSV → Excel (ZIP ou Individual)")
 st.markdown("Arraste ou selecione **um ou mais arquivos CSV** para convertê-los em **arquivos Excel (.xlsx)**.")
 
 # --------------------------
+# Inicialização do estado
+# --------------------------
+if "uploaded_files" not in st.session_state:
+    st.session_state.uploaded_files = None
+
+# --------------------------
+# Botão de limpar arquivos
+# --------------------------
+if st.button("🧹 Limpar arquivos convertidos"):
+    st.session_state.uploaded_files = None
+    st.experimental_rerun()  # Recarrega a página limpa
+
+# --------------------------
 # Upload múltiplo de arquivos
 # --------------------------
 uploaded_files = st.file_uploader(
     "📂 Escolha um ou mais arquivos CSV",
     type=["csv"],
-    accept_multiple_files=True
+    accept_multiple_files=True,
+    key="uploader"
 )
 
+# Atualiza o estado com os arquivos enviados
 if uploaded_files:
+    st.session_state.uploaded_files = uploaded_files
+
+# Usa os arquivos do estado (caso existam)
+if st.session_state.uploaded_files:
+    uploaded_files = st.session_state.uploaded_files
+
     with st.spinner("🔄 Processando arquivos..."):
         time.sleep(0.5)
 
